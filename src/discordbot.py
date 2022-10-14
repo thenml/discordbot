@@ -1,10 +1,16 @@
 from math import floor
-import os
 from typing import Literal, List
+import random as rng
+
+import os
+def find(name, path):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)
+
+
 import discord
 from discord import app_commands
-
-import random as rng
 
 import requests
 from bs4 import BeautifulSoup  
@@ -525,7 +531,9 @@ def main():
             tkn = f.readline()
     else: fpath = ''
     
-    with open(fpath + "8ballAnwsers.txt", "r",encoding="utf-8") as txt:
+    path = find("8ballAnwsers.txt",".")
+    print(path)
+    with open(path, "r",encoding="utf-8") as txt:
         lines = txt.readlines()
     
         anwsers=[]
