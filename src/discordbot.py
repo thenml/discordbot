@@ -515,15 +515,17 @@ async def on_ready():
 
 admin=False
 def main():
-    global gdz_sites, anwsers, gdz_subj, gdz_extra_subj
+    global gdz_sites, anwsers, gdz_subj, gdz_extra_subj, fpath
 
     
     tkn = os.environ.get('TOKEN')
     if tkn == None:
+        fpath = 'src\\'
         with open('src\\_hidden\\token.txt') as f:
             tkn = f.readline()
+    else: fpath = ''
     
-    with open("src\\8ballAnwsers.txt", "r",encoding="utf-8") as txt:
+    with open(fpath + "8ballAnwsers.txt", "r",encoding="utf-8") as txt:
         lines = txt.readlines()
     
         anwsers=[]
