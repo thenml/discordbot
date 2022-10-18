@@ -283,6 +283,7 @@ class gdzTree(discord.ui.View):
 
         htmldata = getdata(site)
         soup = BeautifulSoup(htmldata, 'html.parser')
+        print(f'running /gdz on {subsite}:    {type(htmldata)=}    {type(soup)=}')
 
         self.start = soup.find("div", {"class": "task-list"})
         self.sect = self.start.section
