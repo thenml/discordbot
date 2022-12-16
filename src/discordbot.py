@@ -514,28 +514,15 @@ async def send_rolepicker(interaction: discord.Interaction):
 #endregion
 
 
-@client.event
-async def on_message(message):
-    if message.author.id == client.user.id: return
-    print(message, message.content)
-    embed=discord.Embed(title=f"{message.guild.name} #{message.channel.name}",description=message.content, color=0x4070d6)
-    await log_ch.send(f'<#{message.channel.id}>   {message.author.mention}',embed=embed, files=[await f.to_file() for f in message.attachments])
-
 
 @client.event
 async def on_ready():
-    global MY_GUILD, MY_GUILD2, log_ch
+    global MY_GUILD, MY_GUILD2
     print(f'Logged in as {client.user} (ID: {client.user.id})')
-    print('------\nrunning in guilds:')
-
-    for guild in client.guilds:
-        print(guild.name,'  :  ',guild.id)
-
     print('------')
     
     MY_GUILD = client.get_guild(714888484565024839)  # nml private
     MY_GUILD2 = client.get_guild(753874251089444874) # gamingru
-    log_ch = MY_GUILD.get_channel(1049659746682142720)
 
 
 admin=False
