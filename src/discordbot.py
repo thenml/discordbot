@@ -13,16 +13,14 @@ import discord
 from discord import app_commands
 
 import requests
-from bs4 import BeautifulSoup  
-def getdata(url):  
-    r = requests.get(url)  
+from bs4 import BeautifulSoup
+def getdata(url):
+    r = requests.get(url)
     return r.text
 
 
 #   https://github.com/Rapptz/discord.py/blob/master/examples/app_commands/basic.py
 
-MY_GUILD = discord.Object(id=714888484565024839)  # nml private
-MY_GUILD2 = discord.Object(id=753874251089444874) # gamingru
 
 class MyClient(discord.Client):
     def __init__(self, *, intents: discord.Intents):
@@ -40,6 +38,7 @@ class MyClient(discord.Client):
         self.add_view(RoleSelectView())
 
 intents = discord.Intents.default()
+intents.message_content = True
 client = MyClient(intents=intents)
 
 #region -basics
@@ -285,8 +284,9 @@ class gdzTree(discord.ui.View):
         soup = BeautifulSoup(htmldata, 'html.parser')
         print(f'running /gdz on {subsite}:    {type(htmldata)=}    {type(soup)=}')
 
-        self.start = soup.find("div", {"class": "task-list"})
-        self.sect = self.start.section
+        start = soup.find("div", {"class": "task-list"})
+        print(f'{type(start)=}')
+        self.sect = start.section
 
         self.tree = []
 
@@ -382,14 +382,15 @@ class ColorSelect(discord.ui.Select):
             discord.SelectOption(label='Красный', emoji='🟥'),
             discord.SelectOption(label='Оранжевый', emoji='🟧'),
             discord.SelectOption(label='Жёлтый', emoji='🟨'),
-            discord.SelectOption(label='Лаймовый', emoji='<:light_green_square:1027844088147484682>'),
+            discord.SelectOption(label='Лаймовый', emoji='<:light_green_square:1053312895871619122>'),
             discord.SelectOption(label='Зелёный', emoji='🟩'),
-            discord.SelectOption(label='Бирюзовый', emoji='<:cyan_square:1027844084641046548>'),
+            discord.SelectOption(label='Бирюзовый', emoji='<:cyan_square:1053312891639570512>'),
             discord.SelectOption(label='Голубой', emoji='🟦'),
-            discord.SelectOption(label='Синий', emoji='<:dark_blue_square:1027844086322954271>'),
+            discord.SelectOption(label='Синий', emoji='<:dark_blue_square:1053312893099188234>'),
             discord.SelectOption(label='Фиолетовый', emoji='🟪'),
-            discord.SelectOption(label='Розовый', emoji='<:pink_square:1027844089644855347>'),
+            discord.SelectOption(label='Розовый', emoji='<:pink_square:1053312897293500488>'),
             discord.SelectOption(label='Чёрный', emoji='⬛'),
+            discord.SelectOption(label='Серый', emoji='<:gray_square:1053312894554611742>'),
             discord.SelectOption(label='Белый', emoji='⬜'),
             discord.SelectOption(label='Тестер', emoji='🧩'),
             discord.SelectOption(label='Хелпер', emoji='🛠️'),
@@ -411,12 +412,13 @@ class ColorSelect(discord.ui.Select):
             'фиолетовый':758710603174510595,
             'розовый':   759344214201991198,
             'чёрный':    758395583026167828,
+            'серый':    1053311575517306971,
             'белый':     765174370821210133,
             'тестер':   1027869508708347934,
             'хелпер':    960835410576162966,
         }
         allowed_roles = [
-             'красный', 'оранжевый', 'жёлтый', 'лаймовый', 'зелёный', 'бирюзовый', 'голубой', 'синий', 'фиолетовый', 'розовый', 'чёрный', 'белый'
+             'красный', 'оранжевый', 'жёлтый', 'лаймовый', 'зелёный', 'бирюзовый', 'голубой', 'синий', 'фиолетовый', 'розовый', 'чёрный', 'серый', 'белый'
         ]
         self.values[0] = self.values[0].lower()
         print(f'changed color > {user}   --->   {self.values[0]}')
@@ -449,11 +451,10 @@ class ColorSelectView(discord.ui.View):
 @client.tree.command()
 async def send_colorpicker(interaction: discord.Interaction):
     if interaction.user.id != 645877523481362432: return
-    rolechannel = client.get_channel(792679927148576788)
+    rolechannel = client.get_channel(822091925502951424)
     embed=discord.Embed(title="Выбери себе цвет для ника!", color=0x4070d6)
-    embed.set_image(url = 'https://cdn.discordapp.com/attachments/940124000397443122/948612282395525160/roles.png') #src/images/roles.png  
+    embed.set_image(url = 'https://cdn.discordapp.com/attachments/759379511585407007/1053318728886001765/roles.png') #src/images/roles.png  
     await rolechannel.send(embed=embed, view=ColorSelectView())
-    await interaction.response.pong()
 """
 #endregion
 
@@ -503,37 +504,52 @@ class RoleSelectView(discord.ui.View):
 @client.tree.command()
 async def send_rolepicker(interaction: discord.Interaction):
     if interaction.user.id != 645877523481362432: return
-    rolechannel = client.get_channel(792679927148576788)
+    rolechannel = client.get_channel(822091925502951424)
     embed=discord.Embed(title="Выбери себе другие роли!", color=0x4070d6)
     embed.add_field(name="Пинги", value="<@&1029529953538146315>\nОбщедоступная роль которую можно пингнуть",inline=False)
     embed.add_field(name="Эвенты", value="<@&1029530113584418870>\nПолучить пинг когда происходит событие (например jackbox, игры)",inline=False)
     embed.add_field(name="Тестер", value="<@&958719352511807568>\nСоглашаешься быть подопытной крысой у <@645877523481362432>",inline=False)
     await rolechannel.send(embed=embed, view=RoleSelectView())
-    await interaction.response.pong()
 """
 #endregion
 
 
 @client.event
+async def on_message(message):
+    if message.author.id == client.user.id: return
+    print(message, message.content)
+    embed=discord.Embed(title=f"{message.guild.name} #{message.channel.name}",description=message.content, color=0x4070d6)
+    await log_ch.send(f'<#{message.channel.id}>   {message.author.mention}',embed=embed, files=[await f.to_file() for f in message.attachments])
+
+
+@client.event
 async def on_ready():
+    global MY_GUILD, MY_GUILD2, log_ch
     print(f'Logged in as {client.user} (ID: {client.user.id})')
+    print('------\nrunning in guilds:')
+
+    for guild in client.guilds:
+        print(guild.name,'  :  ',guild.id)
+
     print('------')
+    
+    MY_GUILD = client.get_guild(714888484565024839)  # nml private
+    MY_GUILD2 = client.get_guild(753874251089444874) # gamingru
+    log_ch = MY_GUILD.get_channel(1049659746682142720)
 
 
 admin=False
 def main():
     global gdz_sites, anwsers, gdz_subj, gdz_extra_subj, fpath
 
-    
-    tkn = os.environ.get('TOKEN')
-    if tkn == None:
-        fpath = 'src\\'
-        with open('src\\_hidden\\token.txt') as f:
-            tkn = f.readline()
-    else: fpath = ''
-    
     path = find("8ballAnwsers.txt",".")
     print(path)
+    
+    fpath = ''
+    #fpath = '\\home\\nml\\discordbot\\src'
+    with open(find('token.txt','.')) as f:
+        tkn = f.readline()
+    
     with open(path, "r",encoding="utf-8") as txt:
         lines = txt.readlines()
     
